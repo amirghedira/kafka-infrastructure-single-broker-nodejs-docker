@@ -4,9 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:consumer": "node ./server-consumer/server",
+    "start:producer": "node ./server-producer/server"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "avsc": "^5.7.3",
+    "node-rdkafka": "^2.11.0"
+  }
 }
