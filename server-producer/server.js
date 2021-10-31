@@ -3,7 +3,7 @@ const kafka = require('node-rdkafka')
 const orderType = require('../types/OrderType')
 const stream = kafka.Producer.createWriteStream({
     'metadata.broker.list': 'localhost:9092'
-}, {}, { topic: 'test' })
+}, {}, { topic: 'orders' })
 
 const queueMessage = (order) => {
     const result = stream.write(orderType.toBuffer(order))

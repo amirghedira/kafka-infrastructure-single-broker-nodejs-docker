@@ -11,7 +11,7 @@ const consumer = kafka.KafkaConsumer({
 consumer.connect()
 consumer.on('ready', () => {
     console.log('consumer ready')
-    consumer.subscribe(['test'])
+    consumer.subscribe(['orders'])
     consumer.consume()
 
 }).on('data', (data) => {
