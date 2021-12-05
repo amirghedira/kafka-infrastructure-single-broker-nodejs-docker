@@ -1,19 +1,28 @@
-const kafka = require('node-rdkafka')
-const orderType = require('../types/OrderType')
+const { Kafka } = require('kafkajs')
 
-
-const consumer = kafka.KafkaConsumer({
-    'group.id': 'kafka',
-    'metadata.broker.list': 'localhost:9092'
-}, {})
-
-
-consumer.connect()
-consumer.on('ready', () => {
-    console.log('consumer ready')
-    consumer.subscribe(['orders'])
-    consumer.consume()
-
-}).on('data', (data) => {
-    console.log(orderType.fromBuffer(data.value))
+const kafka = new Kafka({
+    clientId: 'my-app',
+    brokers: ['localhost:9092']
 })
+
+const consumer = kafka.consumer({ groupId: 'test-group' })
+
+const runConsumer = async () => {
+    await consumer.connect()
+    await consumer.subscribe({ topic: 'test-topic-2', fromBeginning: true })
+
+    await consumer.run({
+        eachMessage: async ({ topic, partition, message }) => {
+            console.log({
+                partition,
+                offset: message.offset,
+                value: message.value.toString(),
+            })
+        },
+    })
+}
+
+runConsumer()
+    .catch(err => {
+        console.log(err)
+    })

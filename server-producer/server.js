@@ -1,13 +1,27 @@
-const kafka = require('node-rdkafka')
+const { Kafka } = require('kafkajs')
 
-const orderType = require('../types/OrderType')
-const stream = kafka.Producer.createWriteStream({
-    'metadata.broker.list': 'localhost:9092'
-}, {}, { topic: 'orders' })
+const kafka = new Kafka({
+    clientId: 'my-app',
+    brokers: ['localhost:9092']
+})
+const producer = kafka.producer()
+producer.connect()
+    .then(res => {
+        console.log('producer server successfully started')
+    })
+    .catch(err => {
+        console.log('producer server failed')
+    })
 
-const queueMessage = (order) => {
-    const result = stream.write(orderType.toBuffer(order))
-    console.log(result)
+
+const queueMessage = async (order) => {
+    return await producer.send({
+        topic: 'test-topic-2',
+        messages: [
+            { value: JSON.stringify(order) },
+        ],
+    })
+
 }
 
 setInterval(() => {
@@ -17,4 +31,11 @@ setInterval(() => {
         price: 120
     }
     queueMessage(newOrder)
+        .then(() => {
+            console.log('sended message:', newOrder)
+
+        })
+        .catch(err => {
+            console.log('failed message:', newOrder)
+        })
 }, 5000)
